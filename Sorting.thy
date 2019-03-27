@@ -1,5 +1,5 @@
 theory Sorting
-imports Main "~~/src/HOL/Library/Multiset"
+imports Main "HOL-Library.Multiset"
 begin
 
 inductive sorted :: "'a::linorder list \<Rightarrow> bool" where
@@ -14,8 +14,6 @@ by (ind_cases "sorted (x # xs)") (auto intro: sorted.intros)
 
 locale sorting =
   fixes sort :: "'a::linorder list \<Rightarrow> 'a list"
-  assumes sorted: "sorted (sort xs)" and permutation: "multiset_of (sort xs) = multiset_of xs"
-
-
+  assumes sorted: "sorted (sort xs)" and permutation: "mset (sort xs) = mset xs"
 
 end

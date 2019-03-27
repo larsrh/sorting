@@ -13,7 +13,6 @@ qualified lemma merge_sorted: "sorted xs \<Longrightarrow> sorted ys \<Longright
 proof (induction xs ys rule: merge.induct)
   case (3 x xs y ys)
   thus ?case
-    (*by (smt Sorting.sorted.simps le_cases list.inject merge.simps(1) merge.simps(2) merge.simps(3))*)
     apply (auto intro: sorted.intros)
     apply (cases xs)
     apply (auto intro: sorted.intros)
@@ -25,17 +24,17 @@ proof (induction xs ys rule: merge.induct)
     by (metis Sorting.sorted.simps list.distinct(1) list.sel(3) nth_Cons_0)
 qed (auto intro: sorted.intros)
 
-qualified lemma merge_permutation: "multiset_of (merge xs ys) = multiset_of xs + multiset_of ys"
+qualified lemma merge_permutation: "mset (merge xs ys) = mset xs + mset ys"
 by (induction xs ys rule: merge.induct) (auto simp: algebra_simps)
 
 qualified fun split :: "'a list \<Rightarrow> ('a list \<times> 'a list)" where
 "split [] = ([], [])" |
 "split [x] = ([x], [])" |
-"split (x\<^sub>1 # x\<^sub>2 # xs) = map_prod (op # x\<^sub>1) (op # x\<^sub>2) (split xs)"
+"split (x\<^sub>1 # x\<^sub>2 # xs) = map_prod ((#) x\<^sub>1) ((#) x\<^sub>2) (split xs)"
 
 lemmas split_induct = split.induct[case_names nil single cons]
 
-qualified lemma split_permutation: "multiset_of (fst (split xs)) + multiset_of (snd (split xs)) = multiset_of xs"
+qualified lemma split_permutation: "mset (fst (split xs)) + mset (snd (split xs)) = mset xs"
 by (induction xs rule: split.induct) (auto simp: algebra_simps)
 
 qualified lemma split_length:
@@ -62,11 +61,11 @@ end
 
 end
 
-interpretation merge_sort!: sorting mergesort
+global_interpretation merge_sort: sorting mergesort
 proof
   fix xs :: "'a::linorder list"
   show "sorted (mergesort xs)"
-    proof (induction xs taking: length rule: measure_induct_rule)
+    proof (induction xs taking: length rule: measure_induct_rule[where ?'b = nat])
       case (less xs)
       thus ?case
         by (cases xs rule: mergesort.cases)
@@ -74,8 +73,8 @@ proof
                  intro: Merge_Sort.merge_sorted sorted.intros)
     qed
 
-  show "multiset_of (mergesort xs) = multiset_of xs"
-    proof (induction xs taking: length rule: measure_induct_rule)
+  show "mset (mergesort xs) = mset xs"
+    proof (induction xs taking: length rule: measure_induct_rule[where ?'b = nat])
       case (less xs)
       thus ?case
         by (cases xs rule: mergesort.cases)
@@ -84,6 +83,7 @@ proof
     qed
 qed
 
-export_code mergesort in Scala
+export_code mergesort
+  checking Scala
 
 end

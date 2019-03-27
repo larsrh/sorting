@@ -48,7 +48,7 @@ next
     qed
 qed
 
-qualified lemma insert_permutation: "multiset_of (insert x xs) = {#x#} + multiset_of xs"
+qualified lemma insert_permutation: "mset (insert x xs) = {#x#} + mset xs"
 proof (induction xs)
   case Nil
   show ?case
@@ -75,7 +75,7 @@ primrec insort :: "'a::linorder list \<Rightarrow> 'a list" where
 
 end
 
-interpretation insertion_sort!: sorting insort
+global_interpretation insertion_sort: sorting insort
 proof
   fix xs :: "'a::linorder list"
   show "sorted (insort xs)"
@@ -94,8 +94,11 @@ proof
         done
   qed
 
-  show "multiset_of (insort xs) = multiset_of xs"
+  show "mset (insort xs) = mset xs"
     by (induction xs) (auto simp: Insertion_Sort.insert_permutation union_commute)
 qed
+
+export_code insort
+  checking Scala
 
 end
